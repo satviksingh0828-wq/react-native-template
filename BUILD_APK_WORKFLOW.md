@@ -1,10 +1,10 @@
 # GitHub Actions Workflow: Build Android APK
 
-This workflow automates the process of building a debug APK for the React Native application and uploads it as a GitHub artifact.
+This workflow automates the process of building Android APKs for the React Native application and uploads them as GitHub artifacts.
 
 ## Workflow File
 
-Create a file at `.github/workflows/build-apk.yml` with the following content:
+Create a file at `.github/workflows/build-apk.yml` with the following content. This version is updated to handle the **product flavors** (`production` and `preview`) defined in your project.
 
 ```yaml
 name: Build Android APK
@@ -48,28 +48,36 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          # Building both flavors in debug mode
+          ./gradlew assemblePreviewDebug assembleProductionDebug --no-daemon
 
-      - name: Upload APK Artifact
+      - name: Upload Preview APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-preview-debug
+          path: android/app/build/outputs/apk/preview/debug/*.apk
+          retention-days: 7
+
+      - name: Upload Production APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-production-debug
+          path: android/app/build/outputs/apk/production/debug/*.apk
           retention-days: 7
 ```
 
+## Why the previous one failed
+Your project uses **Product Flavors** (`production` and `preview`). In such cases, Gradle generates the APKs in flavor-specific subdirectories rather than the default `debug/` folder.
+*   **Preview Path**: `android/app/build/outputs/apk/preview/debug/`
+*   **Production Path**: `android/app/build/outputs/apk/production/debug/`
+
 ## How it works
 
-1.  **Trigger**: The workflow runs on every push to `main`, every pull request targeting `main`, or manually via the "Actions" tab.
-2.  **Environment**: It uses `ubuntu-latest`.
-3.  **Setup**:
-    *   Clones the code.
-    *   Sets up Node.js based on the `.nvmrc` file.
-    *   Installs dependencies using `yarn`.
-    *   Sets up JDK 17 (standard for modern React Native Android builds).
-4.  **Build**: Runs `./gradlew assembleDebug` to generate the debug APK.
-5.  **Artifact**: Uploads the generated `.apk` file to the GitHub Actions run. You can download it from the "Actions" tab under the specific workflow run.
+1.  **Trigger**: Runs on push/PR to `main` or manual trigger.
+2.  **Environment**: Uses `ubuntu-latest`.
+3.  **Build**: Runs `./gradlew assemblePreviewDebug assembleProductionDebug` to generate APKs for both environments.
+4.  **Artifacts**: Uploads both APKs as separate artifacts. You can download them from the "Actions" tab under the specific workflow run.
 
 ## Notes
-*   This builds a **debug** APK. For a release APK, you would need to set up signing keys and use `assembleRelease`.
-*   The artifact is kept for 7 days.
+*   These are **debug** builds. They use the default `debug.keystore`.
+*   If you only want one, you can modify the `gradlew` command to just `./gradlew assemblePreviewDebug`.
