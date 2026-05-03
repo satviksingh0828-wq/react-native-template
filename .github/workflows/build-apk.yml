@@ -39,8 +39,8 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          # Building both flavors in debug mode
-          ./gradlew assemblePreviewDebug assembleProductionDebug --no-daemon
+          # -PBUNDLE_IN_DEBUG=true ensures the JS bundle is packaged inside the APK
+          ./gradlew assemblePreviewDebug assembleProductionDebug -PBUNDLE_IN_DEBUG=true --no-daemon
 
       - name: Upload Preview APK
         uses: actions/upload-artifact@v4
