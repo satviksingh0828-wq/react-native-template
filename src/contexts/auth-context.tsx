@@ -21,6 +21,7 @@ interface AuthContextInterface {
   isUserAuthenticated: boolean;
   isVerifyOTPLoading: boolean;
   logout: () => void;
+  setIsUserAuthenticated: (value: boolean) => void;
   sendOTP: (phoneNumber: PhoneNumber) => Promise<void>;
   verifyOTP: (otp: string, phoneNumber: PhoneNumber) => Promise<void>;
 }
@@ -116,6 +117,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({ children }) =
         isUserAuthenticated,
         isVerifyOTPLoading,
         logout,
+        setIsUserAuthenticated,
         sendOTP,
         verifyOTP,
       }}

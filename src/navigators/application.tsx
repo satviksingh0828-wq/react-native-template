@@ -21,7 +21,7 @@ const ApplicationNavigator = () => {
   };
 
   return (
-    <Box safeAreaTop flex={1}>
+    <Box safeAreaTop flex={1} bg="white">
       <NavigationContainer ref={navigationRef} onReady={onNavigationReady}>
         <StatusBar />
         <Stack.Navigator screenOptions={{ headerShown: false }}>

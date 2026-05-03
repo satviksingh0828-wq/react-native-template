@@ -2,19 +2,19 @@ import { extendTheme } from 'native-base';
 
 const ICOLORHUES = {
   primary: {
-    '50': '#E6F0FF',
-    '100': '#CCE0FF',
-    '200': '#99C2FF',
-    '300': '#66A3FF',
-    '400': '#3385FF',
-    '500': '#007AFF',
-    '600': '#0066CC',
-    '700': '#0052A3',
-    '800': '#00438C',
-    '900': '#003D7A',
+    '50': '#F2F2F2',
+    '100': '#E6E6E6',
+    '200': '#CCCCCC',
+    '300': '#B3B3B3',
+    '400': '#808080',
+    '500': '#000000', // Black
+    '600': '#000000',
+    '700': '#000000',
+    '800': '#000000',
+    '900': '#000000',
   },
   secondary: {
-    '50': '#FAFAFA',
+    '50': '#FFFFFF', // White
     '100': '#F5F5F5',
     '200': '#E5E5E5',
     '300': '#D4D4D4',
@@ -26,28 +26,28 @@ const ICOLORHUES = {
     '900': '#171717',
   },
   tertiary: {
-    50: '#fdf2f8',
-    100: '#fce7f3',
-    200: '#fbcfe8',
-    300: '#f9a8d4',
-    400: '#f472b6',
-    500: '#ec4899',
-    600: '#db2777',
-    700: '#be185d',
-    800: '#9d174d',
-    900: '#831843',
+    50: '#FFFFF0', // Ivory
+    100: '#FFFFF0',
+    200: '#FFFFF0',
+    300: '#FFFFF0',
+    400: '#FFFFF0',
+    500: '#FFFFF0',
+    600: '#FFFFF0',
+    700: '#FFFFF0',
+    800: '#FFFFF0',
+    900: '#FFFFF0',
   },
   background: {
-    50: '#fff7fb',
-    100: '#fce4ec',
-    200: '#f8bbd0',
-    300: '#f48fb1',
-    400: '#f06292',
-    500: '#ec407a',
-    600: '#d81b60',
-    700: '#ad1457',
-    800: '#880e4f',
-    900: '#560027',
+    50: '#FFFFFF',
+    100: '#FFFFFF',
+    200: '#FFFFFF',
+    300: '#FFFFFF',
+    400: '#FFFFFF',
+    500: '#FFFFFF',
+    600: '#FFFFFF',
+    700: '#FFFFFF',
+    800: '#FFFFFF',
+    900: '#FFFFFF',
   },
   danger: {
     '50': '#FEECEC',
@@ -55,7 +55,7 @@ const ICOLORHUES = {
     '200': '#FFADAD',
     '300': '#FF8484',
     '400': '#FF5C5C',
-    '500': '#FF3B30',
+    '500': '#FF0000', // Red for MUTO
     '600': '#E2332B',
     '700': '#BF2A23',
     '800': '#991F1A',
@@ -130,16 +130,16 @@ const appTheme = extendTheme({
           bg: 'primary.500',
         },
         subtle: {
-          bg: 'background',
+          bg: 'secondary.200',
           _text: {
-            color: 'coolGray.800',
+            color: 'black',
           },
           _pressed: {
-            bg: 'coolGray.200',
+            bg: 'secondary.300',
           },
         },
         danger: {
-          bg: 'danger.600',
+          bg: 'danger.500',
           _disabled: {
             bg: 'danger.200',
           },
@@ -153,7 +153,7 @@ const appTheme = extendTheme({
       baseStyle: {
         _focus: {
           borderColor: 'primary.500',
-          backgroundColor: 'background',
+          backgroundColor: 'secondary.50',
         },
       },
       variants: {
@@ -168,7 +168,7 @@ const appTheme = extendTheme({
     },
     Heading: {
       baseStyle: {
-        color: 'coolGray.800',
+        color: 'black',
       },
       sizes: {
         lg: {
@@ -177,11 +177,11 @@ const appTheme = extendTheme({
         },
         xs: {
           fontWeight: '500',
-          color: 'coolGray.600',
+          color: 'black',
           lineHeight: 20,
         },
         '2xl': {
-          color: 'white',
+          color: 'black',
           lineHeight: 40,
         },
         '3xl': {

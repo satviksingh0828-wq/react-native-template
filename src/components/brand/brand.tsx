@@ -1,7 +1,6 @@
-import { useTheme, Box } from 'native-base';
+import { useTheme, Box, HStack } from 'native-base';
 import React, { useRef, useEffect, useMemo } from 'react';
-import { Animated, Dimensions, Text, StyleSheet } from 'react-native';
-import BrandLogo from 'react-native-template/assets/img/logo.svg';
+import { Animated, Dimensions, Text, StyleSheet, Image } from 'react-native';
 import { SpinnerSize, SpinnerTypes } from 'react-native-template/src/types/spinner';
 
 import Spinner from '../spinner/spinner';
@@ -25,12 +24,6 @@ const Brand: React.FC<Props> = ({ height = '100%', width = '100%' }) => {
   const { colors } = useTheme();
 
   useEffect(() => {
-    /**
-     * Animates the company logo and brand text in a simple intro sequence:
-     * 1. The logo slides down from above the viewport to the vertical center over ANIM_DURATION_IN_MS = 500 ms.
-     * 2. A PAUSE_DURATION_IN_MS = 1000 ms pause occurs with the logo fully visible.
-     * 3. The logo fades out while the brand text ("Better.") fades in over FADE_DURATION_IN_MS = 300 ms.
-     */
     Animated.sequence([
       Animated.timing(translateY, {
         toValue: SCREEN_HEIGHT / 2 - LOGO_SIZE / 2,
@@ -51,7 +44,7 @@ const Brand: React.FC<Props> = ({ height = '100%', width = '100%' }) => {
         }),
       ]),
     ]).start();
-  }, [translateY, logoOpacity, textOpacity]);
+  }, [translateY, logoOpacity, textOpacity, SCREEN_HEIGHT]);
 
   const dynamicStyles = useMemo(
     () =>
@@ -60,27 +53,31 @@ const Brand: React.FC<Props> = ({ height = '100%', width = '100%' }) => {
           transform: [{ translateY }],
           opacity: logoOpacity,
         },
-        textColor: {
-          color: colors.secondary['50'],
-        },
       }),
-    [translateY, logoOpacity, colors.secondary['50']],
+    [translateY, logoOpacity],
   );
 
   return (
     <Box
       testID="brand-img-wrapper"
-      backgroundColor={colors.primary['500']}
+      backgroundColor="#FFFFF0" // Ivory
       height={height}
       width={width}
       position="relative"
     >
       <Animated.View style={[styles.logoContainer, dynamicStyles.logoAnim]}>
-        <BrandLogo width={LOGO_SIZE} height={LOGO_SIZE} />
+        <Image 
+          source={require('react-native-template/assets/img/sparrow_logo.png')} 
+          style={{ width: LOGO_SIZE, height: LOGO_SIZE }}
+          resizeMode="contain"
+        />
       </Animated.View>
 
       <Animated.View style={[styles.centerContainer, { opacity: textOpacity }]}>
-        <Text style={[styles.centerText, dynamicStyles.textColor]}>Better.</Text>
+        <HStack space={1} alignItems="center">
+          <Text style={[styles.centerText, { color: 'black' }]}>Sparrow</Text>
+          <Text style={[styles.centerText, { color: 'red', fontWeight: 'bold' }]}>MUTO</Text>
+        </HStack>
       </Animated.View>
 
       <Animated.View style={styles.spinnerWrapper}>
