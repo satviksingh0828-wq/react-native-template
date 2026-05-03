@@ -4,7 +4,7 @@ This workflow automates the process of building Android APKs for the React Nativ
 
 ## Workflow File
 
-Create a file at `.github/workflows/build-apk.yml` with the following content. This version is updated to handle the **product flavors** (`production` and `preview`) defined in your project.
+Create a file at `.github/workflows/build-apk.yml` with the following content. This version is updated to **force JavaScript bundling** into the debug APK, which fixes the "Unable to load script" error when running the app on a device without a local Metro server.
 
 ```yaml
 name: Build Android APK
@@ -48,8 +48,8 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          # Building both flavors in debug mode
-          ./gradlew assemblePreviewDebug assembleProductionDebug --no-daemon
+          # -PBUNDLE_IN_DEBUG=true ensures the JS bundle is packaged inside the APK
+          ./gradlew assemblePreviewDebug assembleProductionDebug -PBUNDLE_IN_DEBUG=true --no-daemon
 
       - name: Upload Preview APK
         uses: actions/upload-artifact@v4
@@ -66,18 +66,18 @@ jobs:
           retention-days: 7
 ```
 
-## Why the previous one failed
-Your project uses **Product Flavors** (`production` and `preview`). In such cases, Gradle generates the APKs in flavor-specific subdirectories rather than the default `debug/` folder.
-*   **Preview Path**: `android/app/build/outputs/apk/preview/debug/`
-*   **Production Path**: `android/app/build/outputs/apk/production/debug/`
+## Why you saw "Unable to load script"
+By default, React Native **Debug** builds do not include the JavaScript bundle inside the APK. Instead, they try to fetch it from a Metro server running on your computer. Since the APK built in GitHub Actions is running on your phone without a connection to a Metro server, it fails to load the script.
+
+Adding `-PBUNDLE_IN_DEBUG=true` tells the build system to package the JavaScript bundle directly into the APK, making it "standalone" even in debug mode.
 
 ## How it works
 
 1.  **Trigger**: Runs on push/PR to `main` or manual trigger.
 2.  **Environment**: Uses `ubuntu-latest`.
-3.  **Build**: Runs `./gradlew assemblePreviewDebug assembleProductionDebug` to generate APKs for both environments.
-4.  **Artifacts**: Uploads both APKs as separate artifacts. You can download them from the "Actions" tab under the specific workflow run.
+3.  **Build**: Runs the Gradle command with the `BUNDLE_IN_DEBUG` property set to true.
+4.  **Artifacts**: Uploads both standalone APKs as separate artifacts.
 
 ## Notes
-*   These are **debug** builds. They use the default `debug.keystore`.
-*   If you only want one, you can modify the `gradlew` command to just `./gradlew assemblePreviewDebug`.
+*   These are still **debug** builds.
+*   If you want to build a true **Release** APK (which is always standalone), you would use `./gradlew assembleRelease`, but that requires setting up signing keys.
