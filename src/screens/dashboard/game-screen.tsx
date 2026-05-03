@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, VStack, HStack, Text, Button, Heading, Pressable, useToast } from 'native-base';
+import { Box, VStack, HStack, Text, Button, Heading, Pressable, Center, useBreakpointValue, ScrollView } from 'native-base';
 import { useAuthContext } from '../../contexts';
 import { useLocalStorage } from '../../utils';
 
@@ -9,7 +9,13 @@ const GameScreen = () => {
   const [userName, setUserName] = useState('Player');
   const { logout } = useAuthContext();
   const { getFromStorage } = useLocalStorage();
-  const toast = useToast();
+
+  // Responsiveness: Adjust square size based on screen width
+  const squareSize = useBreakpointValue({
+    base: 80,
+    sm: 90,
+    md: 100,
+  });
 
   useEffect(() => {
     const loadName = async () => {
@@ -21,9 +27,9 @@ const GameScreen = () => {
 
   const calculateWinner = (squares: any[]) => {
     const lines = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Cols
-      [0, 4, 8], [2, 4, 6],             // Diagonals
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6],
     ];
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
@@ -72,54 +78,74 @@ const GameScreen = () => {
   };
 
   return (
-    <Box flex={1} bg="white" p={4} safeArea>
-      <VStack flex={1} space={8} alignItems="center" justifyContent="center">
-        <VStack alignItems="center" space={2}>
-          <HStack space={1}>
-            <Heading size="xl" color="black">Sparrow</Heading>
-            <Heading size="xl" color="red.500">MUTO</Heading>
-          </HStack>
-          <Text fontSize="lg" fontWeight="bold" color={winner ? "red.500" : "black"}>
-            {status}
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} bg="white">
+      <Box flex={1} p={4} safeArea>
+        <VStack flex={1} space={8} alignItems="center" justifyContent="center">
+          <VStack alignItems="center" space={2}>
+            <HStack space={1}>
+              <Heading size="xl" color="black">Sparrow</Heading>
+              <Heading size="xl" color="red.500">MUTO</Heading>
+            </HStack>
+            <Text fontSize="lg" fontWeight="bold" color={winner ? "red.500" : "black"} textAlign="center">
+              {status}
+            </Text>
+          </VStack>
+
+          <Center bg="black" p={2} borderRadius="lg" shadow={4}>
+            <VStack space={2}>
+              {[0, 1, 2].map(row => (
+                <HStack key={row} space={2}>
+                  {[0, 1, 2].map(col => {
+                    const index = row * 3 + col;
+                    return (
+                      <Pressable 
+                        key={index} 
+                        onPress={() => handlePress(index)}
+                        w={squareSize} h={squareSize} 
+                        bg="white"
+                        borderRadius="sm"
+                        alignItems="center"
+                        justifyContent="center"
+                        _pressed={{ bg: 'gray.100' }}
+                      >
+                        <Text fontSize="4xl" fontWeight="bold" color={board[index] === 'X' ? 'black' : 'red.500'}>
+                          {board[index]}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </HStack>
+              ))}
+            </VStack>
+          </Center>
+
+          <VStack space={4} w="full" maxW="300">
+            <Button 
+              onPress={resetGame} 
+              variant="solid" 
+              size="lg"
+              borderRadius="full"
+              _pressed={{ bg: 'primary.700' }}
+            >
+              Restart Game
+            </Button>
+            <Button 
+              onPress={logout} 
+              variant="outline" 
+              size="lg"
+              borderRadius="full"
+              colorScheme="gray"
+            >
+              Logout
+            </Button>
+          </VStack>
+
+          <Text fontSize="xs" color="gray.400" textAlign="center">
+            Cosmoking Beauty Special Edition
           </Text>
         </VStack>
-
-        <Box bg="black" p={1} borderRadius="md">
-          <VStack space={1}>
-            {[0, 1, 2].map(row => (
-              <HStack key={row} space={1}>
-                {[0, 1, 2].map(col => {
-                  const index = row * 3 + col;
-                  return (
-                    <Pressable 
-                      key={index} 
-                      onPress={() => handlePress(index)}
-                      w={24} h={24} 
-                      bg="white"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Text fontSize="4xl" fontWeight="bold" color={board[index] === 'X' ? 'black' : 'red.500'}>
-                        {board[index]}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </HStack>
-            ))}
-          </VStack>
-        </Box>
-
-        <VStack space={4} w="full">
-          <Button onPress={resetGame} variant="solid" size="lg">
-            Restart Game
-          </Button>
-          <Button onPress={logout} variant="subtle" size="lg">
-            Logout
-          </Button>
-        </VStack>
-      </VStack>
-    </Box>
+      </Box>
+    </ScrollView>
   );
 };
 
